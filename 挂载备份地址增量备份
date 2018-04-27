@@ -1,0 +1,35 @@
+#挂载备份地址增量备份
+#!/bin/bash
+cd /home/pi/Apps/
+if [ x$1 == x ]
+then
+	echo "备份地址不能为空"
+	exit 1
+fi
+echo "备份地址为$1"
+bkPath='/home/pi/Apps/leither_bk/'
+if [ ! -d "$bkPath" ]
+then
+	sudo mkdir "$bkPath"
+fi
+error=`sudo mount $1 $bkPath 2>&1` 
+if [ x$error != x ]
+then
+        echo "挂载错误 $error" 2>backup_error.log
+	exit 1
+fi
+
+if [ ! -d "$bkPath"snapshot/ ]
+then
+	sudo mkdir "$bkPath"snapshot/ 
+fi
+if [ ! -d  "$bkPath"bak/ ]
+then
+	sudo mkdir "$bkPath"bak/
+fi
+
+
+#增量备份Leither文件夹
+sudo tar -g "$bkPath"snapshot/snapshot_data.snap -cpvf "$bkPath"bak/bak_data$(date +%F-%H%M%S).tar Leither/ >/dev/null
+
+sudo umount $bkPath

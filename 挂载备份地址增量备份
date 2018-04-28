@@ -29,7 +29,7 @@ then
 fi
 
 
-#增量备份Leither文件夹
-sudo tar -g "$bkPath"snapshot/snapshot_data.snap -cpvf "$bkPath"bak/bak_data$(date +%F-%H%M%S).tar Leither/ >/dev/null
+#增量备份文件夹
+sudo tar -g "$bkPath"snapshot/snapshot_data.snap -cpvf "$bkPath"bak/bak_data$(date +%F-%H%M%S).tar xx/ >/dev/null
 
 sudo umount $bkPath

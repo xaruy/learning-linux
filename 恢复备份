@@ -1,0 +1,39 @@
+#!/bin/bash
+bkPath='/home/pi/Apps/leither_bk/'
+leitherPath='/home/pi/Apps/Leither/'
+
+if [ x$1 == x ]
+then
+	echo "备份地址不能为空"
+	exit 1
+fi
+if [ ! -d "$bkPath" ]
+then
+	sudo mkdir "$bkPath"
+fi
+error=`sudo mount $1 $bkPath 2>&1` 
+if [ x$error != x ]
+then
+ 	echo "挂载错误 $error" 2>backup_error.log
+	exit 1
+fi
+#如果有Leither则先停止并删除
+if [ -d $leitherPath ]
+then	
+	sudo service apps4leither stop
+	sudo rm -rf $leitherPath
+fi
+
+#按时间顺序解压备份数据
+cd "$bkPath"bak/
+for file in `ls -rt`
+do
+	sudo tar -xzvpf "${bkPath}bak/${file}" -C '/home/pi/Apps'
+done
+
+
+sudo umount $bkPath
+
+###################################################
+# 备份数据回复后，原备份数据需要删除，重新开始增量备份 #
+###################################################
